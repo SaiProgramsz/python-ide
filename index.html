@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Python IDE</title>
+<style>
+body {
+  font-family: monospace;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#container {
+  display: flex;
+  flex-grow: 1;
+}
+
+#editor {
+  flex-grow: 1;
+  padding: 10px;
+  overflow: auto;
+  resize: both;
+  min-height: 200px;
+  min-width: 300px;
+}
+
+#output {
+  flex-grow: 1;
+  padding: 10px;
+  background-color: #f0f0f0;
+  overflow: auto;
+  min-height: 200px;
+  min-width: 300px;
+}
+
+#controls {
+  padding: 10px;
+  background-color: #eee;
+}
+
+textarea {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  font-family: monospace;
+  resize: none;
+  outline: none;
+}
+
+button {
+  padding: 5px 10px;
+  margin-right: 5px;
+}
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <button onclick="runCode()">Run</button>
+</div>
+
+<div id="container">
+  <div id="editor">
+    <textarea id="code"></textarea>
+  </div>
+  <div id="output"></div>
+</div>
+
+<script>
+function runCode() {
+  const code = document.getElementById("code").value;
+  const outputDiv = document.getElementById("output");
+
+  outputDiv.innerHTML = ""; // Clear previous output
+
+  //  This is a *very* simplified (and not ideal) approach.
+  //  In a real application, you would *not* use eval like this.
+  //  You would need a server-side component to execute Python code.
+
+  try {
+      // Client-side execution with a Python WASM runtime (example)
+      // This requires loading a Python WASM runtime library.  (See below)
+      if (typeof pyodide !== 'undefined') { // Check if Pyodide is loaded
+            let result = pyodide.runPython(code);
+            outputDiv.innerHTML = result !== undefined ? result : "";
+      } else {
+        outputDiv.innerHTML = "<span style='color: red;'>Python WASM runtime not loaded.</span><br>You'll need to include the Pyodide library. (See instructions below)";
+      }
+  } catch (error) {
+    outputDiv.innerHTML = "<span style='color: red;'>Error: " + error.message + "</span>";
+  }
+}
+
+// *** IMPORTANT: To use this, you must include the Pyodide library ***
+// Add these lines to your HTML's <head> section:
+
+
+<script src="https://pyodide.org/pyodide/v0.22.1/pyodide.js"></script>  // Or latest version
+<script>
+  async function loadPyodide() {
+    await loadPyodide({ indexURL : "https://pyodide.org/pyodide/v0.22.1/index.json" }); // Or latest version
+    console.log("Pyodide loaded!");
+  }
+  loadPyodide();
+</script>
+
+
+
+</script>
+
+</body>
+</html>
